@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# 2011-2015 Nico Schottelius (nico-cdist at schottelius.org)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+#
+
+username="$(cat "$__object/parameter/username")"
+
+if test -f "$__object/parameter/uid"; then
+    uid="$(cat "$__object/parameter/uid")"
+else
+    uid=1000
+fi
+
+for nosuchuser in debian ubuntu; do
+    __user "$nosuchuser" --state absent
+done
+
+__package zsh --state present
+require="__package/zsh __directory/home/users __user/debian __user/ubuntu" __user "$username" \
+    --uid "$uid" --shell /bin/zsh --home "/home/users/$username" \
+    --create-home
+
+__directory /home/users --mode 0755
+
+require="__user/$username __directory/home/users" __directory "/home/users/$username" \
+    --owner "$username" \
+    --mode 0700
+
+require="__user/$username" __user_groups "$username" \
+    --group video --group audio --group users
+
+# Not needed for debian
+os=$(cat "$__global/explorer/os")
+
+case $os in
+    archlinux)
+        require="__user/$username" __user_groups "${username}-${os}" \
+            --user $username \
+            --group network --group optical --group power
+    ;;
+esac

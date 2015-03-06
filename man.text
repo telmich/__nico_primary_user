@@ -1,0 +1,59 @@
+cdist-type__nico_primary_user(7)
+================================
+Nico Schottelius <nico-cdist--@--schottelius.org>
+
+
+NAME
+----
+cdist-type__nico_primary_user - Add a primary user
+
+
+DESCRIPTION
+-----------
+This cdist type allows you to create a primary user for
+a system (typically a desktop or notebook). It ensures that
+general accounts like "ubuntu" or "debian" do not exist.
+
+REQUIRED PARAMETERS
+-------------------
+username::
+    The name of the user to create
+
+OPTIONAL PARAMETERS
+-------------------
+state::
+   'present', 'absent' or 'exists', defaults to 'present'
+   where:
+      present: the file is exactly the one from source
+      absent: the file does not exist
+      exists: the file from source but only if it doesn't already exist
+
+uid::
+   Select the uid (defaults to 1000)
+
+
+EXAMPLES
+--------
+
+--------------------------------------------------------------------------------
+# Create primary user named nico
+__nico_primary_user --username nico
+
+# The same thing
+__nico_primary_user --username nico etc/cdist-configured --state present
+
+# Ensure it is not existing
+__nico_primary_user --username nico etc/cdist-configured --state absent
+
+--------------------------------------------------------------------------------
+
+
+SEE ALSO
+--------
+- cdist-type(7)
+
+
+COPYING
+-------
+Copyright \(C) 2011-2015 Nico Schottelius. Free use of this software is
+granted under the terms of the GNU General Public License version 3 (GPLv3).
